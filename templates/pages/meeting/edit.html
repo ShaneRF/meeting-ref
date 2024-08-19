@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+	{% load static %}
+	{% include "includeBtn/btn_head.html"%}
+	{% include "includeBtn/btn_head_pikaday.html"%}
+</head>
+ 
+<body>
+	<div class="page-container"> 
+		{% include "includeBtn/btn_header.html"%}
+		<div class="row row-offcanvas row-offcanvas-left">
+			<!-- sidebar -->
+			{% include "includeBtn/btn_menu.html"%}
+			<!-- main area -->
+			
+			<div class="col-xs-12 col-sm-10 infoNewBox infoNewBox btLine">
+			<div class="pageTitle">
+			功能名稱  - 修改
+			</div>
+			<div class="pageTitle">
+				<p>【基本資料--> - 修改】<span class="red">＊</span>：代表必填</p>
+			</div>
+			
+
+			<form class="" name="tform" id="tform" method="post" action="list.php"  enctype="multipart/form-data">
+				<input type="hidden" name="id" value="<?=$id?>">
+				<div class="div-table info-list">
+					<div class="div-tr infoDataBox ">
+						<div class="div-td td-odd">系統編號</div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="tid" placeholder="(系統取得)" value="1" readonly />
+						</div>
+						<div class="div-td td-odd">建檔日期</div>
+						<div class="div-td td-even">
+							<input class="-js-datePick2" name="createdate" id="createdate" value="<?=date('Y-m-d')?>" readonly />
+						</div>
+					</div>
+					<div class="div-tr single">
+						
+						<div class="div-td td-odd">狀態</div>
+						<div class="div-td td-even">
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="inlineRadio4" value="1" name="isonline" checked>
+								<label for="inlineRadio4"> 上線 </label>
+							</div>	
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="inlineRadio5" value="0" name="isonline"  >
+								<label for="inlineRadio5"> 下線 </label>
+							</div>
+						</div>
+						
+					</div>
+					<div class="div-tr single ">
+						<div class="div-td td-odd">翻譯語系</div>
+						<div class="div-td td-even">
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="language[]" id="language_tw" value="tw" class="memid" >
+								<label  for="language_tw">繁體中文</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="language[]" id="language_en" value="en" class="memid" >
+								<label  for="language_en">英文版</label>
+							</div>
+							
+						</div>
+					</div>
+					<div class="div-tr single ">
+						<div class="div-td td-odd">會議主持</div>
+						<div class="div-td td-even">
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_1" value="1" class="memid" >
+								<label  for="Master_1">吳XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_2" value="2" class="memid" >
+								<label  for="Master_2">王XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_3" value="3" class="memid" >
+								<label  for="Master_3">李XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_4" value="4" class="memid" >
+								<label  for="Master_4">陳XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_5" value="5" class="memid" >
+								<label  for="Master_5">顧XX</label>
+							</div>
+						</div>
+					</div>
+					<div class="div-tr single ">
+						<div class="div-td td-odd">與會人員</div>
+						<div class="div-td td-even">
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_1" value="1" class="memid" >
+								<label  for="Master_1">吳XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_2" value="2" class="memid" >
+								<label  for="Master_2">王XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_3" value="3" class="memid" >
+								<label  for="Master_3">李XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_4" value="4" class="memid" >
+								<label  for="Master_4">陳XX</label>
+							</div>
+							<div class="td checkbox checkbox-danger">
+								<input type="checkbox" name="Master[]" id="Master_5" value="5" class="memid" >
+								<label  for="Master_5">顧XX</label>
+							</div>
+						</div>
+					</div>
+					<div class="div-tr single ">
+						<div class="div-td td-odd">會議主旨</div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="Subject" value=""  placeholder="請輸入說明">
+						</div>
+					</div>
+					<div class="div-tr single ">
+						<div class="div-td td-odd">會議簡介</div>
+						<div class="div-td td-even">
+							<textarea rows="5" name="Subtitle" id="Subtitle" class="form-control" placeholder="請輸入會議簡介" ></textarea>
+						</div>
+					</div>
+					<div class="div-tr single ">
+						<div class="div-td td-odd">會議內容</div>
+						<div class="div-td td-even">
+							<textarea rows="5" name="Contents" id="Contents" class="form-control" placeholder="請輸入會議內容" ></textarea>
+						</div>
+					</div>
+					
+					
+					
+				</div>
+				<div class="infoSearchBtn">
+					<button id="IsCheck" type="button">摘要檢查</button>
+					<button id="IsRoom" type="button">會議室</button>
+					<button type ="button" onclick="document.location='./list'" value="回上頁">回上頁</button>
+					<button id="IsSend" type="button">送出</button>
+					<button type="reset">重填</button>
+					
+				</div>
+			</form>
+
+<script type="text/javascript">
+	$("#IsRoom").click(function(){
+		window.open('./chatroom');
+	});
+
+</script>
+{% include "includeBtn/footer.html"%}

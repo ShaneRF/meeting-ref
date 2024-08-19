@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+	{% load static %}
+	{% include "includeBtn/btn_head.html"%}
+	{% include "includeBtn/btn_head_pikaday.html"%}
+</head>
+ 
+<body>
+	<div class="page-container"> 
+		{% include "../includeBtn/btn_header.html"%}
+		<div class="row row-offcanvas row-offcanvas-left">
+			<!-- sidebar -->
+			{% include "../includeBtn/btn_menu.html"%}
+			<!-- main area -->
+			{% if PKind=='list' %}
+            	<div class="col-xs-12 col-sm-10 infoNewBox btLine">
+            	<div class="pageTitle">
+					功能名稱
+					<a class="addBtn" href="./add">新增</a>
+            	</div>
+			{% else %}
+            	<div class="col-xs-12 col-sm-10 infoNewBox infoNewBox btLine">
+            	<div class="pageTitle">
+				功能名稱 {% " - 修改" if id != '' else " - 新增" %}
+				</div>
+				<div class="pageTitle">
+					<p>【基本資料-->{% " - 修改" if id != '' else " - 新增" %}】<span class="red">＊</span>：代表必填</p>
+				</div>
+			{% endif %}

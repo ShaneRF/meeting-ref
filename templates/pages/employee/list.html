@@ -1,0 +1,96 @@
+﻿<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+	{% load static %}
+	{% include "includeBtn/btn_head.html"%}
+	{% include "includeBtn/btn_head_pikaday.html"%}
+</head>
+ 
+<body>
+	<div class="page-container"> 
+		{% include "includeBtn/btn_header.html"%}
+		<div class="row row-offcanvas row-offcanvas-left">
+			<!-- sidebar -->
+			{% include "includeBtn/btn_menu.html"%}
+			<!-- main area -->
+			
+			<div class="col-xs-12 col-sm-10 infoNewBox btLine">
+			<div class="pageTitle">
+				功能名稱
+				<a class="addBtn" href="./add">新增</a>
+			</div>
+
+			{% include "./btn_search.html"%}
+			<div class="item_data">
+				<div class="div-table rwd-table">
+					<div class="div-tr infoDataBox ">
+						<div id="css-table" class="css-table">
+							<div class="thead">
+								<div class="tr">
+									<div class="th">no</div>
+									<div class="th">建檔日</div>
+									<div class="th">代號</div>
+									<div class="th">名稱</div>
+									<div class="th">帳號</div>
+									<div class="th">行動</div>
+									<div class="th">刪除</div>
+								</div>
+							</div>
+							
+							<div class="tbody">
+								
+								<a class="tr click">
+									<div class="td a"	data1="1" data-th="編號"	>1</div>
+									<div class="td a"	data1="1" data-th="建檔日"	>2024-08-11</div>
+									<div class="td a"	data1="1" data-th="代號"	>12345678</div>
+									<div class="td a"	data1="1" data-th="名稱"	>XXX</div>
+									<div class="td a"	data1="1" data-th="帳號"	>XXXXXXXXXXXXX</div>
+									<div class="td a"	data1="1" data-th="行動"	>09XXXXXXXX</div>
+									<div class="td del"	data1="1" data-th="刪除"	><span style="color: red;cursor: pointer;">刪除</span></div>
+								</a>
+								<a class="tr click">
+									<div class="td a"	data1="1" data-th="編號"	>1</div>
+									<div class="td a"	data1="1" data-th="建檔日"	>2024-08-11</div>
+									<div class="td a"	data1="1" data-th="代號"	>12345678</div>
+									<div class="td a"	data1="1" data-th="名稱"	>XXX</div>
+									<div class="td a"	data1="1" data-th="帳號"	>XXXXXXXXXXXXX</div>
+									<div class="td a"	data1="1" data-th="行動"	>09XXXXXXXX</div>
+									<div class="td del"	data1="1" data-th="刪除"	><span style="color: red;cursor: pointer;">刪除</span></div>
+								</a>
+								<a class="tr click">
+									<div class="td a"	data1="1" data-th="編號"	>1</div>
+									<div class="td a"	data1="1" data-th="建檔日"	>2024-08-11</div>
+									<div class="td a"	data1="1" data-th="代號"	>12345678</div>
+									<div class="td a"	data1="1" data-th="名稱"	>XXX</div>
+									<div class="td a"	data1="1" data-th="帳號"	>XXXXXXXXXXXXX</div>
+									<div class="td a"	data1="1" data-th="行動"	>09XXXXXXXX</div>
+									<div class="td del"	data1="1" data-th="刪除"	><span style="color: red;cursor: pointer;">刪除</span></div>
+								</a>
+								<a class="tr click">
+									<div class="td a"	data1="1" data-th="編號"	>1</div>
+									<div class="td a"	data1="1" data-th="建檔日"	>2024-08-11</div>
+									<div class="td a"	data1="1" data-th="代號"	>12345678</div>
+									<div class="td a"	data1="1" data-th="名稱"	>XXX</div>
+									<div class="td a"	data1="1" data-th="帳號"	>XXXXXXXXXXXXX</div>
+									<div class="td a"	data1="1" data-th="行動"	>09XXXXXXXX</div>
+									<div class="td del"	data1="1" data-th="刪除"	><span style="color: red;cursor: pointer;">刪除</span></div>
+								</a>
+								<a class="tr click">
+									<div class="td a"	data1="1" data-th="編號"	>1</div>
+									<div class="td a"	data1="1" data-th="建檔日"	>2024-08-11</div>
+									<div class="td a"	data1="1" data-th="代號"	>12345678</div>
+									<div class="td a"	data1="1" data-th="名稱"	>XXX</div>
+									<div class="td a"	data1="1" data-th="帳號"	>XXXXXXXXXXXXX</div>
+									<div class="td a"	data1="1" data-th="行動"	>09XXXXXXXX</div>
+									<div class="td del"	data1="1" data-th="刪除"	><span style="color: red;cursor: pointer;">刪除</span></div>
+								</a>
+								
+							</div>
+						</div>
+					</div>						
+				</div>
+				<div class="container-fluid insidePage">
+					
+				</div>
+			</div>
+{% include "includeBtn/footer.html"%}			

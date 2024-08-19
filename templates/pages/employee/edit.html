@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+	{% load static %}
+	{% include "includeBtn/btn_head.html"%}
+	{% include "includeBtn/btn_head_pikaday.html"%}
+</head>
+ 
+<body>
+	<div class="page-container"> 
+		{% include "includeBtn/btn_header.html"%}
+		<div class="row row-offcanvas row-offcanvas-left">
+			<!-- sidebar -->
+			{% include "includeBtn/btn_menu.html"%}
+			<!-- main area -->
+			
+			<div class="col-xs-12 col-sm-10 infoNewBox infoNewBox btLine">
+			<div class="pageTitle">
+			功能名稱  - 修改
+			</div>
+			<div class="pageTitle">
+				<p>【基本資料--> - 修改】<span class="red">＊</span>：代表必填</p>
+			</div>
+
+			<form class="" name="tform" id="tform" method="post" action="list.php"  enctype="multipart/form-data">
+				<input type="hidden" name="id" value="<?=$id?>">
+				<div class="div-table info-list">
+					<div class="div-tr infoDataBox ">
+						<div class="div-td td-odd">系統編號</div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="tid" placeholder="(系統取得)" value="1" readonly />
+						</div>
+						<div class="div-td td-odd">建檔日期</div>
+						<div class="div-td td-even">
+							<input class="-js-datePick2" name="createdate" id="createdate" value="<?=date('Y-m-d')?>" readonly />
+						</div>
+					</div>
+					<div class="div-tr ">
+						
+						<div class="div-td td-odd">狀態</div>
+						<div class="div-td td-even">
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="inlineRadio4" value="1" name="isonline" checked>
+								<label for="inlineRadio4"> 上線 </label>
+							</div>	
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="inlineRadio5" value="0" name="isonline"  >
+								<label for="inlineRadio5"> 下線 </label>
+							</div>
+						</div>
+						<div class="div-td td-odd">鎖定<font color="#FF1F00">＊</font></div>
+						<div class="div-td td-even">
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="islock1" value="1" name="islock" checked>
+								<label for="islock1"> 是 </label>
+							</div>	
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="islock2" value="0" name="islock" >
+								<label for="islock2"> 否 </label>
+							</div>
+						</div>
+					</div>
+					<div class="div-tr infoDataBox ">
+						<div class="div-td td-odd">代號<font color="#FF1F00">＊</font></div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="emlyNO" id="emlyNO" placeholder="" value="123456789" />
+						</div>
+						<div class="div-td td-odd">姓名<font color="#FF1F00">＊</font></div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="name" id="name" value="吳XX" >
+						</div>
+						
+					</div>
+
+					<div class="div-tr infoDataBox ">
+						<div class="div-td td-odd">行動電話</div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="mobile" id="mobile" value="09XXXXXXXX" onkeyup="javascript:$('#act').val($(this).val())" >
+						</div>
+						<div class="div-td td-odd">其他電話</div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="tel" id="tel" value="04-12345678" >
+						</div>
+					</div>
+					
+					<div class="div-tr infoDataBox ">
+						<div class="div-td td-odd">帳號</div>
+						<div class="div-td td-even">
+							<input type="text" class="form-control" name="act" id="act" value="09XXXXXXXX" placeholder="請輸入手機" >
+						</div>
+						<div class="div-td td-odd">密碼</div>
+						<div class="div-td td-even">
+							<input type="password" class="form-control" name="pwd" id="pwd" value="" placeholder="s" >
+						</div>
+					</div>
+					<div class="div-tr infoDataBox ">
+						<div class="div-td td-odd">管理者</div>
+						<div class="div-td td-even">
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="isadmin1" value="1" name="isadmin"  checked>
+								<label for="isadmin1"> 是 </label>
+							</div>	
+							<div class="radio radio-danger radio-inline">
+								<input type="radio" id="isadmin2" value="0" name="isadmin" >
+								<label for="isadmin2"> 否 </label>
+							</div>
+						</div>
+						<div class="div-td td-odd"> </div>
+						<div class="div-td td-even">
+							
+						</div>
+					</div>
+					
+				</div>
+				<div class="infoSearchBtn">
+					<button id="IsSend" type="button">送出</button>
+					<button type="reset">重填</button>
+					<button type ="button" onclick="document.location='./list'" value="回上頁">回上頁</button>
+				</div>
+			</form>
+
+			<script type="text/javascript">
+				$("#IsSend").click(function(){
+					let g = true;
+					<?if(!empty($id)){?>
+					let m = ['name','act'];
+					let s = ['姓名未填寫','帳號未填寫'];
+					<?}else{?>
+					let m = ['name','act','pwd'];
+					let s = ['姓名未填寫','帳號未填寫','密碼未填寫'];
+					<?}?>
+					for(i=0;i<m.length;i++){
+						if($("#"+m[i]).val()=='' || $("#"+m[i]).val()=='0' ){
+							alert(s[i]);
+							g = false;
+							break;
+						}
+					}       
+					if(!g){return false};
+					$("#tform").submit();
+				});	
+			</script>
+{% include "includeBtn/footer.html"%}
