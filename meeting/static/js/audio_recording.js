@@ -274,6 +274,39 @@ function updateStatus(message, isError = false) {
     }
 }
 
+function endMeeting() {
+    console.log('正在结束会议...');
+    updateStatus('正在结束会议...');
+
+    const csrftoken = getCookie('csrftoken');
+
+    fetch('/end_meeting/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => {
+        console.log('收到服务器响应:', response.status);
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            console.log('会议已结束');
+            console.log('合并文件:', data.combined_file);
+            console.log('翻译文件:', data.translated_file);
+            updateStatus('会议已结束，文件已生成');
+        } else {
+            console.log('结束会议失败');
+            updateStatus('结束会议失败: ' + data.error, true);
+        }
+    })
+    .catch(error => {
+        console.error('结束会议时出错:', error);
+        updateStatus('结束会议时出错: ' + error.message, true);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM 内容已加載，正在初始化...');
     connectWebSocket();
@@ -281,6 +314,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('start-recording').addEventListener('click', startRecording);
     document.getElementById('stop-recording').addEventListener('click', stopRecording);
+    // 新增结束会议按钮监听器
+    document.getElementById('end-meeting').addEventListener('click', endMeeting);
     console.log('已添加事件監聽器');
     updateStatus('頁面加載完成，等待操作');
 });

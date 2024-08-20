@@ -43,4 +43,5 @@ urlpatterns = [
     path('process_audio/', views.process_audio, name='process_audio'),
     #path('transcribe/', views.transcribe_audio, name='transcribe_audio'),
     path('ws/speech/<int:meeting_id>/', views.chatroom, name='speech_websocket'),
+    path('end_meeting/', views.end_meeting, name='end_meeting'),
 ]

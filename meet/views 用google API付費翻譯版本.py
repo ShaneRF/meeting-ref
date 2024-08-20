@@ -5,7 +5,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.shortcuts import redirect
 from google.cloud import speech_v1p1beta1 as speech
-from googletrans import Translator
+from google.cloud import translate_v2 as translate
 import io
 from channels.layers import get_channel_layer #0814 2232新增
 from asgiref.sync import async_to_sync #0814 2232新增
@@ -162,14 +162,15 @@ def end_meeting(request):
                 f.write(combined_transcript)
 
             # 步骤2: 翻译合并后的文本
-            translator = Translator()
-            translation = translator.translate(combined_transcript, src='zh-tw', dest='en')
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"D:\BackupData\shane\Desktop\key\django-server-30-429202-4d4ce05e3a9b.json"
+            translate_client = translate.Client()
+            translation = translate_client.translate(combined_transcript, target_language='en')
 
             # 保存翻译后的文本
             translated_filename = f"EN_combo_{timestamp}.txt"
             translated_file_path = os.path.join(settings.MEDIA_ROOT, translated_filename)
             with open(translated_file_path, 'w', encoding='utf-8') as f:
-                f.write(translation.text)
+                f.write(translation['translatedText'])
 
             return JsonResponse({
                 'success': True,

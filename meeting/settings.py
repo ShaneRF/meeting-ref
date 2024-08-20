@@ -14,7 +14,7 @@ from pathlib import Path
 import pymysql
 pymysql.install_as_MySQLdb()
 
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"D:\BackupData\shane\Desktop\meeting\django-server-30-429202-4d4ce05e3a9b.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"D:\BackupData\shane\Desktop\key\django-server-30-429202-4d4ce05e3a9b.json"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
