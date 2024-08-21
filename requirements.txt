@@ -2,3 +2,5 @@ Django==4.2
 Markdown==3.6
 pymysql==1.1.1
 line-bot-sdk==3.11.0
+channels==3.0.5
+google-cloud-speech==2.27.0

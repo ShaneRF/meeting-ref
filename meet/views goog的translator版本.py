@@ -5,6 +5,7 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.shortcuts import redirect
 from google.cloud import speech_v1p1beta1 as speech
+from googletrans import Translator
 import io
 from channels.layers import get_channel_layer #0814 2232新增
 from asgiref.sync import async_to_sync #0814 2232新增
@@ -16,17 +17,12 @@ import logging
 from datetime import datetime
 from django.conf import settings  #驗證有無產生錄音檔是：結果是正常
 import glob
-import whisper 
-
 # from django.http import JsonResponse
 
 # 設置日誌
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# 加载 Whisper 模型（可以选择不同大小的模型，如 'tiny', 'base', 'small', 'medium', 'large'）
-#model = whisper.load_model("medium", download_root=r"D:\BackupData\shane\Desktop\GitHub sample\Whisper\ggml-medium.bin")
-model = whisper.load_model("medium", download_root=r"D:\BackupData\shane\Desktop\GitHub sample\Whisper")
 # Create your views here.
 
 
@@ -82,7 +78,7 @@ def chatroom(requests, meeting_id=None):
     }
     return render(requests, "pages/meeting/chatroom.html", context)
     #return render(requests, "pages/meeting/chatroom.html", {'meeting_id': meeting_id})
-
+    
 @csrf_exempt
 def process_audio(request):
     if request.method == 'POST':
@@ -93,22 +89,39 @@ def process_audio(request):
         filename = f"audio_{timestamp}.webm"
         transcript_filename = f"transcript_{timestamp}.txt"
         
-        # 保存音频文件
+        # 保存音頻文件
         file_path = os.path.join(settings.MEDIA_ROOT, filename)
         with open(file_path, 'wb+') as destination:
             for chunk in audio_file.chunks():
                 destination.write(chunk)
         
-        logger.info(f"音频文件已保存: {file_path}")
+        logger.info(f"音頻文件已保存: {file_path}")
 
+        # 使用保存的文件進行轉錄
+        os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"D:\BackupData\shane\Desktop\key\django-server-30-429202-4d4ce05e3a9b.json"
+        client = speech.SpeechClient()
+
+        with open(file_path, "rb") as audio_file:
+            content = audio_file.read()
+
+        audio = speech.RecognitionAudio(content=content)
+        config = speech.RecognitionConfig(
+            encoding=speech.RecognitionConfig.AudioEncoding.WEBM_OPUS,
+            sample_rate_hertz=48000,
+            language_code="zh-TW",
+            audio_channel_count=1,
+        )
+
+        logger.info("正在使用 Google Speech-to-Text API 進行轉換...")
         try:
-            # 使用 Whisper 进行转录
-            result = model.transcribe(file_path)
-            transcript = result["text"]
-            
+            response = client.recognize(config=config, audio=audio)
+            logger.info(f"收到 {len(response.results)} 個結果")
+            transcript = ""
+            for result in response.results:
+                transcript += result.alternatives[0].transcript + " "
             logger.info(f"转录结果：{transcript}")
             
-            # 保存转录文本，包括时间戳
+            # 保存轉錄文本，包括時間戳
             transcript_file_path = os.path.join(settings.MEDIA_ROOT, transcript_filename)
             formatted_timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             with open(transcript_file_path, 'w', encoding='utf-8') as f:
@@ -128,8 +141,6 @@ def process_audio(request):
                 'error': str(e), 
                 'audio_file': filename
             })
-
-
 @csrf_exempt
 def end_meeting(request):
     if request.method == 'POST':
@@ -151,7 +162,7 @@ def end_meeting(request):
                 f.write(combined_transcript)
 
             # 步骤2: 翻译合并后的文本
-            translator = whisper()
+            translator = Translator()
             translation = translator.translate(combined_transcript, src='zh-tw', dest='en')
 
             # 保存翻译后的文本
@@ -172,7 +183,5 @@ def end_meeting(request):
                 'error': str(e)
             })
 
-    return JsonResponse({'error': '无效的请求方法'}, status=400)   
-
-     
+    return JsonResponse({'error': '无效的请求方法'}, status=400)    
     
