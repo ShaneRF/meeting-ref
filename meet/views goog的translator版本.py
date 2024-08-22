@@ -141,6 +141,7 @@ def process_audio(request):
                 'error': str(e), 
                 'audio_file': filename
             })
+            
 @csrf_exempt
 def end_meeting(request):
     if request.method == 'POST':
@@ -163,18 +164,34 @@ def end_meeting(request):
 
             # 步骤2: 翻译合并后的文本
             translator = Translator()
-            translation = translator.translate(combined_transcript, src='zh-tw', dest='en')
+            
+            # 翻译为英文
+            english_translation = translator.translate(combined_transcript, src='zh-tw', dest='en').text
+            english_filename = f"EN_combo_{timestamp}.txt"
+            english_file_path = os.path.join(settings.MEDIA_ROOT, english_filename)
+            with open(english_file_path, 'w', encoding='utf-8') as f:
+                f.write(english_translation)
 
-            # 保存翻译后的文本
-            translated_filename = f"EN_combo_{timestamp}.txt"
-            translated_file_path = os.path.join(settings.MEDIA_ROOT, translated_filename)
-            with open(translated_file_path, 'w', encoding='utf-8') as f:
-                f.write(translation.text)
+            # 翻译为日文
+            japanese_translation = translator.translate(combined_transcript, src='zh-tw', dest='ja').text
+            japanese_filename = f"JP_combo_{timestamp}.txt"
+            japanese_file_path = os.path.join(settings.MEDIA_ROOT, japanese_filename)
+            with open(japanese_file_path, 'w', encoding='utf-8') as f:
+                f.write(japanese_translation)
+
+            # 翻译为简体中文（如果原文是繁体中文）
+            simplified_chinese_translation = translator.translate(combined_transcript, src='zh-tw', dest='zh-cn').text
+            simplified_chinese_filename = f"CN_combo_{timestamp}.txt"
+            simplified_chinese_file_path = os.path.join(settings.MEDIA_ROOT, simplified_chinese_filename)
+            with open(simplified_chinese_file_path, 'w', encoding='utf-8') as f:
+                f.write(simplified_chinese_translation)
 
             return JsonResponse({
                 'success': True,
                 'combined_file': combined_filename,
-                'translated_file': translated_filename
+                'english_file': english_filename,
+                'japanese_file': japanese_filename,
+                'simplified_chinese_file': simplified_chinese_filename
             })
         except Exception as e:
             logger.error(f"结束会议时出错: {str(e)}")

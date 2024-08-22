@@ -16,7 +16,10 @@ import logging
 from datetime import datetime
 from django.conf import settings  #驗證有無產生錄音檔是：結果是正常
 import glob
-import whisper 
+import whisper
+from deep_translator import GoogleTranslator
+import sys
+import traceback
 
 # from django.http import JsonResponse
 
@@ -102,13 +105,13 @@ def process_audio(request):
         logger.info(f"音频文件已保存: {file_path}")
 
         try:
-            # 使用 Whisper 进行转录
+            # 使用 Whisper 進行轉錄
             result = model.transcribe(file_path)
             transcript = result["text"]
             
-            logger.info(f"转录结果：{transcript}")
+            logger.info(f"轉綠結果：{transcript}")
             
-            # 保存转录文本，包括时间戳
+            # 保存轉錄文本，包括時間戳
             transcript_file_path = os.path.join(settings.MEDIA_ROOT, transcript_filename)
             formatted_timestamp = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
             with open(transcript_file_path, 'w', encoding='utf-8') as f:
@@ -122,12 +125,14 @@ def process_audio(request):
                 'timestamp': timestamp
             })
         except Exception as e:
-            logger.error(f"转录过程中出错: {str(e)}")
+            logger.error(f"轉錄過程中出錯: {str(e)}")
             return JsonResponse({
                 'success': False, 
                 'error': str(e), 
                 'audio_file': filename
             })
+
+
 
 
 @csrf_exempt
@@ -150,29 +155,60 @@ def end_meeting(request):
             with open(combined_file_path, 'w', encoding='utf-8') as f:
                 f.write(combined_transcript)
 
-            # 步骤2: 翻译合并后的文本
-            translator = whisper()
-            translation = translator.translate(combined_transcript, src='zh-tw', dest='en')
+            logger.info(f"合并的转录文本已保存: {combined_filename}")
 
-            # 保存翻译后的文本
-            translated_filename = f"EN_combo_{timestamp}.txt"
-            translated_file_path = os.path.join(settings.MEDIA_ROOT, translated_filename)
-            with open(translated_file_path, 'w', encoding='utf-8') as f:
-                f.write(translation.text)
+            # 步骤2: 翻譯合併後的文本
+            translations = {
+                'en': {'dest': 'english', 'prefix': 'EN'},
+                'ja': {'dest': 'japanese', 'prefix': 'JP'},
+                'zh-CN': {'dest': 'chinese (simplified)', 'prefix': 'CN'}
+            }
+            
+            translated_files = {}
+
+            for lang, info in translations.items():
+                try:
+                    translator = GoogleTranslator(source='chinese (traditional)', target=info['dest'])
+                    # 分段翻译，每次翻译 1000 个字符
+                    chunks = [combined_transcript[i:i+1000] for i in range(0, len(combined_transcript), 1000)]
+                    translated_chunks = [translator.translate(chunk) for chunk in chunks]
+                    translation = ''.join(translated_chunks)
+                    
+                    if translation:
+                        filename = f"{info['prefix']}_combo_{timestamp}.txt"
+                        file_path = os.path.join(settings.MEDIA_ROOT, filename)
+                        with open(file_path, 'w', encoding='utf-8') as f:
+                            f.write(translation)
+                        translated_files[lang] = filename
+                        logger.info(f"{info['prefix']} 翻译文本已保存: {filename}")
+                    else:
+                        logger.error(f"{info['prefix']} 翻译结果为空")
+                except Exception as e:
+                    logger.error(f"{info['prefix']} 翻译过程中出错: {str(e)}")
+                    logger.error(f"错误类型: {type(e).__name__}")
+                    logger.error(f"错误详情: {str(e)}")
+                    logger.error(f"错误堆栈: {traceback.format_exc()}")
 
             return JsonResponse({
                 'success': True,
                 'combined_file': combined_filename,
-                'translated_file': translated_filename
+                **translated_files
             })
         except Exception as e:
             logger.error(f"结束会议时出错: {str(e)}")
+            logger.error(f"错误类型: {type(e).__name__}")
+            logger.error(f"错误详情: {str(e)}")
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
             return JsonResponse({
                 'success': False,
                 'error': str(e)
             })
 
-    return JsonResponse({'error': '无效的请求方法'}, status=400)   
 
-     
+
+    return JsonResponse({'error': '无效的请求方法'}, status=400) 
+
+test_translator = GoogleTranslator(source='chinese (traditional)', target='english')
+test_result = test_translator.translate("你好，世界")
+logger.info(f"测试翻译结果: {test_result}")
     

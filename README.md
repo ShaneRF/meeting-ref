@@ -78,4 +78,13 @@ pip install google-cloud-speech
     C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v12.5\libnvvp
 
     4.完成後，基本上whisper的辨視率與速度，是比google的STT和googletrans的Translator，快與準。
+08/22
+    1.whisper 搭配deep_translator翻英文和日文及簡體中文
+      deep-translator==1.11.4
+      （原始合併-   combo_
+      （簡體合併-CN_combo_
+      （英文合併-EN_combo_
+      （日文合併-JP_combo_
+    儲存在media資料夾裡。
+
     
