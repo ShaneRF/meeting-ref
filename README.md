@@ -67,7 +67,19 @@ pip install google-cloud-speech
 
     1.採用普通版本的whisper 模型。約1.5G。
     放置的路徑：model = whisper.load_model("medium", download_root=r"放的資料夾路徑\Whisper")
-    2.驗證CUDA版本：
+    2.PyTorch版本相依：
+    如執行時出現錯誤 OSError: [WinError 126] 找不到指定的模組。 Error loading ，可以下載並安装最新的 Visual C++ Redistributable
+    https://aka.ms/vs/17/release/vc_redist.x64.exe
+    如果使用CPU進行語音辨視，請執行以下語法。
+    pip install torch==1.10.0+cpu torchvision==0.11.0+cpu torchaudio==0.10.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+    
+    CUDA相容版次對應：
+    https://download.pytorch.org/whl
+    例如：檢視顯卡屬性可以查看到 NVDIA CUDA XX.X.XXX
+    https://www.nvidia.com/zh-tw/geforce/drivers/
+    https://docs.nvidia.com/cuda/cuda-toolkit-release-notes/index.html
+
+    如果使用GPU，驗證CUDA版本：
     python -c "import torch; print(torch.__version__); print(torch.cuda.is_available())"
     應該要出現以下：
     2.4.0
