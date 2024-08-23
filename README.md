@@ -58,6 +58,9 @@ pip install google-cloud-speech
       Python\Python312\Lib\site-packages\torch\__init__.py", line 148, in <module>
       Python\Python312\Lib\site-packages\torch\lib\fbgemm.dll" or one of its dependencies.
 
+    如執行時出現錯誤 OSError: [WinError 126] 找不到指定的模組。 Error loading ****略**fbgemm.dll" or one of its dependencies.，可以下載並安装最新的 Visual C++ Redistributable
+    https://aka.ms/vs/17/release/vc_redist.x64.exe
+
     改善問題：捨棄舊版env。  
     ★改用conda create虛擬環境，如果採用GPU運算，需確認CUDA版本，我的是12.5，採用11.8兼容。
     conda create -n whisper_env python=3.9
@@ -68,8 +71,7 @@ pip install google-cloud-speech
     1.採用普通版本的whisper 模型。約1.5G。
     放置的路徑：model = whisper.load_model("medium", download_root=r"放的資料夾路徑\Whisper")
     2.PyTorch版本相依：
-    如執行時出現錯誤 OSError: [WinError 126] 找不到指定的模組。 Error loading ，可以下載並安装最新的 Visual C++ Redistributable
-    https://aka.ms/vs/17/release/vc_redist.x64.exe
+    
     如果使用CPU進行語音辨視，請執行以下語法。
     pip install torch==1.10.0+cpu torchvision==0.11.0+cpu torchaudio==0.10.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
     
