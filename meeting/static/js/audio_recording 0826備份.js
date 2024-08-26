@@ -5,13 +5,10 @@ let analyser;
 let microphone;
 let audioChunks = [];
 let silenceTimer;
-let currentUser = "Current User"; // 可以根据实际情况设置用户名 0826
 const SILENCE_THRESHOLD = -50; // 声音阈值，可以根據需要调整
 const SILENCE_DURATION = 1000; // 静音持续时间，单位为毫秒
 // 將最大錄音时間改為 60 秒
 const MAX_RECORDING_DURATION = 20000; // 60 秒
-
-
 
 
 function setupMediaRecorder() {
@@ -72,8 +69,7 @@ function startRecording() {
     
     isRecording = true;
     audioChunks = [];
-    updateStatus('開始錄音');
-    updateRecordingStatus('正在錄音...');
+    updateStatus('開始檢測聲音');
     
     detectSound();
 }
@@ -86,7 +82,6 @@ function stopRecording() {
         }
         console.log('錄音停止');
         updateStatus('錄音停止');
-        updateRecordingStatus('錄音已停止');
     } else {
         console.log('未在錄音，忽略停止指令');
         updateStatus('未在錄音，忽略停止指令');
@@ -116,13 +111,11 @@ function detectSound() {
                 recordingStartTime = Date.now();
                 mediaRecorder.start();
                 console.log('開始錄音');
-                updateRecordingStatus('正在錄音...');
             } else if (Date.now() - recordingStartTime >= MAX_RECORDING_DURATION) {
                 mediaRecorder.stop();
                 isCurrentlyRecording = false;
-                totalRecordingTime = 0;
+                totalRecordingTime = 0; // 重置錄音時間
                 console.log('達到最大錄音時間，停止並發送');
-                updateRecordingStatus('達到最大錄音時間，已停止');
             }
         } else {
             if (isCurrentlyRecording && !silenceTimer) {
@@ -130,7 +123,6 @@ function detectSound() {
                     mediaRecorder.stop();
                     isCurrentlyRecording = false;
                     console.log('檢測到靜音，停止錄音');
-                    updateRecordingStatus('檢測到靜音，已停止錄音');
                 }, SILENCE_DURATION);
             }
         }
@@ -141,7 +133,7 @@ function detectSound() {
     checkAudioLevel();
 }
 
-// 修改 sendAudioToServer 函数，在发送后清空 audioChunks 0826移WS及GCP的設定
+// 修改 sendAudioToServer 函数，在发送后清空 audioChunks
 function sendAudioToServer() {
     if (audioChunks.length === 0) return;
 
@@ -168,6 +160,8 @@ function sendAudioToServer() {
     .then(data => {
         if (data.success) {
             console.log('收到轉錄文本:', data.transcript);
+            console.log('音頻文件保存路徑:', data.file_path);
+            console.log('转录文件名:', data.transcript_file);
             
             // 使用當前時間作為時間戳
             const now = new Date();
@@ -182,12 +176,21 @@ function sendAudioToServer() {
                 hour12: false  // 使用24小時制
             }).format(now);
 
-            // 更新聊天窗口
-            addMessageToChat(currentUser, data.transcript, formattedTimestamp);
+            // 直接在這裡更新 transcript
+            const transcriptElement = document.getElementById('transcript');
+            if (transcriptElement) {
+                const newTranscript = `<p><strong>[${formattedTimestamp}]</strong> ${data.transcript}</p>`;
+                transcriptElement.innerHTML += newTranscript;
+                transcriptElement.scrollTop = transcriptElement.scrollHeight;
+                console.log('已更新轉錄文本:', newTranscript);
+            } else {
+                console.error('找不到 transcript 元素');
+            }
 
             updateStatus('轉錄完成');
         } else {
             console.log('轉錄失敗');
+            console.log('音頻文件保存路徑:', data.file_path);
             updateStatus('服務器未返回結果', true);
         }
     })
@@ -216,12 +219,42 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function connectWebSocket() {
+    const meetId = document.getElementById('meeting-id').value;
+    console.log('正在连接 WebSocket 進行會議：', meetId);
+    const ws = new WebSocket(`ws://${window.location.host}/ws/speech/${meetId}/`);
 
+    ws.onopen = () => {
+        console.log('WebSocket 連接成功');
+        updateStatus('WebSocket連接成功');
+    };
 
-function updateRecordingStatus(message) {
-    const recordingStatusElement = document.getElementById('recording-status');
-    if (recordingStatusElement) {
-        recordingStatusElement.textContent = message;
+    ws.onmessage = (event) => {
+        console.log('收到WebSocket消息：', event.data);
+        const data = JSON.parse(event.data);
+        if (data.type === 'transcription') {
+            updateTranscript(data.text);
+        }
+    };
+
+    ws.onerror = (error) => {
+        console.error('WebSocket 錯誤：', error);
+        updateStatus('WebSocket錯誤：' + error.message, true);
+    };
+
+    ws.onclose = () => {
+        console.log('WebSocket 已斷開');
+        updateStatus('WebSocket連接已斷開');
+    };
+}
+
+function sendTranscriptToWebSocket(transcript) {
+    if (ws && ws.readyState === WebSocket.OPEN) {
+        console.log('發送轉錄文本到 WebSocket:', transcript);
+        ws.send(JSON.stringify({ type: 'transcription', text: transcript }));
+    } else {
+        console.log('WebSocket 未連接，未發送轉錄文本');
+        updateStatus('WebSocket 未連接，無法發送结果', true);
     }
 }
 
@@ -230,22 +263,6 @@ function updateTranscript(text) {
     const transcriptElement = document.getElementById('transcript');
     transcriptElement.innerHTML += text + '<br>';
     transcriptElement.scrollTop = transcriptElement.scrollHeight;
-
-    // 使用当前时间作为时间戳 0826
-    const now = new Date();
-    const formattedTimestamp = new Intl.DateTimeFormat('zh-TW', {
-        timeZone: 'Asia/Taipei',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false  // 使用24小时制
-    }).format(now);
-
-    // 更新聊天窗口
-    addMessageToChat(currentUser, text, formattedTimestamp);
 }
 
 function updateStatus(message, isError = false) {
@@ -290,33 +307,10 @@ function endMeeting() {
     });
 }
 
-function addMessageToChat(sender, message, timestamp) {
-    const chatBox = document.getElementById('chat-box');
-    const messageHTML = `
-        <div class="message sent">
-            <div class="info">
-                <img src="/static/images/default-avatar.jpg" alt="${sender}">
-                <div>
-                    <div class="sender-name">${sender}</div>
-                    <div class="bubble">
-                        <strong>[${timestamp}]</strong><br>
-                        ${message}
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-    chatBox.innerHTML += messageHTML;
-    chatBox.scrollTop = chatBox.scrollHeight;
-}
-
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM 内容已加載，正在初始化...');
-    //connectWebSocket();
+    connectWebSocket();
     setupMediaRecorder();
-
-    // 设置当前用户名（可以从服务器获取或使用其他方式）0826
-    currentUser = "User" + Math.floor(Math.random() * 1000); // 示例：随机生成用户名
 
     document.getElementById('start-recording').addEventListener('click', startRecording);
     document.getElementById('stop-recording').addEventListener('click', stopRecording);
@@ -324,5 +318,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('end-meeting').addEventListener('click', endMeeting);
     console.log('已添加事件監聽器');
     updateStatus('頁面加載完成，等待操作');
-    updateRecordingStatus('等待開始錄音...');
 });

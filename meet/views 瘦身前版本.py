@@ -4,13 +4,9 @@ from django.http import HttpResponse,JsonResponse
 from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.shortcuts import redirect
-#from google.cloud import speech_v1p1beta1 as speech
 import io
-#from channels.layers import get_channel_layer #0814 2232新增
-#from asgiref.sync import async_to_sync #0814 2232新增
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-#from google.cloud import speech
 import os
 import logging
 from datetime import datetime
@@ -85,7 +81,7 @@ def chatroom(requests, meeting_id=None):
     }
     return render(requests, "pages/meeting/chatroom.html", context)
     #return render(requests, "pages/meeting/chatroom.html", {'meeting_id': meeting_id})
-#0826 
+
 @csrf_exempt
 def process_audio(request):
     if request.method == 'POST':
@@ -120,13 +116,16 @@ def process_audio(request):
             return JsonResponse({
                 'success': True, 
                 'transcript': transcript, 
+                'audio_file': filename,
+                'transcript_file': transcript_filename,
                 'timestamp': timestamp
             })
         except Exception as e:
             logger.error(f"轉錄過程中出錯: {str(e)}")
             return JsonResponse({
                 'success': False, 
-                'error': str(e)
+                'error': str(e), 
+                'audio_file': filename
             })
 
 
@@ -177,14 +176,14 @@ def end_meeting(request):
                         with open(file_path, 'w', encoding='utf-8') as f:
                             f.write(translation)
                         translated_files[lang] = filename
-                        logger.info(f"{info['prefix']} 翻譯文本已保存: {filename}")
+                        logger.info(f"{info['prefix']} 翻译文本已保存: {filename}")
                     else:
-                        logger.error(f"{info['prefix']} 翻譯结果為空")
+                        logger.error(f"{info['prefix']} 翻译结果为空")
                 except Exception as e:
-                    logger.error(f"{info['prefix']} 翻譯過程中出錯: {str(e)}")
-                    logger.error(f"錯誤類型: {type(e).__name__}")
-                    logger.error(f"錯誤詳情: {str(e)}")
-                    logger.error(f"錯誤堆棧: {traceback.format_exc()}")
+                    logger.error(f"{info['prefix']} 翻译过程中出错: {str(e)}")
+                    logger.error(f"错误类型: {type(e).__name__}")
+                    logger.error(f"错误详情: {str(e)}")
+                    logger.error(f"错误堆栈: {traceback.format_exc()}")
 
             return JsonResponse({
                 'success': True,
@@ -192,10 +191,10 @@ def end_meeting(request):
                 **translated_files
             })
         except Exception as e:
-            logger.error(f"結束會議時出錯: {str(e)}")
-            logger.error(f"錯誤類型: {type(e).__name__}")
-            logger.error(f"錯誤詳情: {str(e)}")
-            logger.error(f"錯誤堆棧: {traceback.format_exc()}")
+            logger.error(f"结束会议时出错: {str(e)}")
+            logger.error(f"错误类型: {type(e).__name__}")
+            logger.error(f"错误详情: {str(e)}")
+            logger.error(f"错误堆栈: {traceback.format_exc()}")
             return JsonResponse({
                 'success': False,
                 'error': str(e)
@@ -203,8 +202,8 @@ def end_meeting(request):
 
 
 
-    return JsonResponse({'error': '無效的請求方法'}, status=400) 
+    return JsonResponse({'error': '无效的请求方法'}, status=400) 
 
 test_translator = GoogleTranslator(source='chinese (traditional)', target='english')
 test_result = test_translator.translate("你好，世界")
-logger.info(f"測試翻譯結果: {test_result}")
+logger.info(f"测试翻译结果: {test_result}")

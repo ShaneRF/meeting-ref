@@ -2,12 +2,12 @@ import os
 from google.cloud import speech
 
 # 設置 Google Cloud 憑證
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"D:\BackupData\shane\Desktop\meeting\django-server-30-429202-4d4ce05e3a9b.json"
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = r"D:\BackupData\shane\Desktop\key\django-server-30-429202-cb5de5546dda.json"
 
 def test_speech_to_text():
     client = speech.SpeechClient()
 
-    audio_file_path = r"D:\BackupData\shane\Desktop\meeting\record18.wav"
+    audio_file_path = r"D:\BackupData\shane\Desktop\meeting-ref\record18.wav"
     
     if not os.path.exists(audio_file_path):
         print(f"Error: The file {audio_file_path} does not exist.")
